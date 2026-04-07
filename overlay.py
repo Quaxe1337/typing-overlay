@@ -1,28 +1,22 @@
-"""
-Typing Character Overlay
-========================
-A transparent, always-on-top desktop overlay that animates a character
-whenever you press keys on your keyboard.
-
-Controls:
-  - Left-click + drag  : Move the overlay anywhere on screen
-  - Right-click        : Open settings menu (resize / quit)
-"""
-
 import tkinter as tk
 from pynput import keyboard
+from PIL import Image, ImageTk   # Pillow library for image handling
 
-# ── Sprite frames using Unicode emojis ──────────────────────────────────────
+# ── Sprite frames using images ──────────────────────────────────────────────
+# Replace these file paths with your actual image files
 
-IDLE_FRAMES = ["🧍"]
+IDLE_FRAMES = [ImageTk.PhotoImage(Image.open("images/idle.png"))]
 
-TYPING_FRAMES = ["🧑‍💻", "⌨️ ", "🧑‍💻", "⌨️ "]
+TYPING_FRAMES = [
+    ImageTk.PhotoImage(Image.open("images/typing1.png")),
+    ImageTk.PhotoImage(Image.open("images/typing2.png")),
+]
 
 SPECIAL_FRAMES = {
-    "Key.space":     ["🕺", "🕺"],
-    "Key.enter":     ["🙌", "🙌"],
-    "Key.backspace": ["😬", "😬"],
-    "Key.esc":       ["😱", "😱"],
+    "Key.space":     [ImageTk.PhotoImage(Image.open("images/space.png"))],
+    "Key.enter":     [ImageTk.PhotoImage(Image.open("images/enter.png"))],
+    "Key.backspace": [ImageTk.PhotoImage(Image.open("images/backspace.png"))],
+    "Key.esc":       [ImageTk.PhotoImage(Image.open("images/esc.png"))],
 }
 
 # ── App ──────────────────────────────────────────────────────────────────────
@@ -54,10 +48,8 @@ class TypingOverlay:
     def _setup_character(self):
         self.char_label = tk.Label(
             self.root,
-            text=IDLE_FRAMES[0],
-            font=("Segoe UI Emoji", 72),
-            bg="black",
-            fg="white",
+            image=IDLE_FRAMES[0],
+            bg="black"
         )
         self.char_label.pack(expand=True)
 
@@ -100,7 +92,8 @@ class TypingOverlay:
         self.menu.tk_popup(event.x_root, event.y_root)
 
     def _resize(self, size):
-        self.char_label.config(font=("Segoe UI Emoji", size // 2))
+        # Resize images dynamically if needed
+        # (Optional: reload images at different sizes)
         self.root.geometry(f"{size}x{size + 20}")
 
     def _start_keyboard_listener(self):
@@ -127,7 +120,8 @@ class TypingOverlay:
     def _play_frames(self, frames, idx):
         if self._anim_job:
             self.root.after_cancel(self._anim_job)
-        self.char_label.config(text=frames[idx])
+        self.char_label.config(image=frames[idx])
+        self.char_label.image = frames[idx]  # keep reference
         next_idx = idx + 1
         if next_idx < len(frames):
             self._anim_job = self.root.after(120, lambda: self._play_frames(frames, next_idx))
@@ -135,7 +129,8 @@ class TypingOverlay:
             self._anim_job = self.root.after(300, self._reset_idle)
 
     def _reset_idle(self):
-        self.char_label.config(text=IDLE_FRAMES[0])
+        self.char_label.config(image=IDLE_FRAMES[0])
+        self.char_label.image = IDLE_FRAMES[0]
         self.key_label.config(text="")
         self._anim_job = None
 
