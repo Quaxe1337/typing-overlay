@@ -1,30 +1,20 @@
 import tkinter as tk
 from pynput import keyboard
-from PIL import Image, ImageTk   # Pillow library for image handling
+from PIL import Image, ImageTk
+import os, sys
 
-# ── Sprite frames using images ──────────────────────────────────────────────
-# Replace these file paths with your actual image files
-
-IDLE_FRAMES = [ImageTk.PhotoImage(Image.open("images/idle.png"))]
-
-TYPING_FRAMES = [
-    ImageTk.PhotoImage(Image.open("images/typing1.png")),
-    ImageTk.PhotoImage(Image.open("images/typing2.png")),
-]
-
-SPECIAL_FRAMES = {
-    "Key.space":     [ImageTk.PhotoImage(Image.open("images/space.png"))],
-    "Key.enter":     [ImageTk.PhotoImage(Image.open("images/enter.png"))],
-    "Key.backspace": [ImageTk.PhotoImage(Image.open("images/backspace.png"))],
-    "Key.esc":       [ImageTk.PhotoImage(Image.open("images/esc.png"))],
-}
-
-# ── App ──────────────────────────────────────────────────────────────────────
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS   # for PyInstaller
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 class TypingOverlay:
     def __init__(self):
         self.root = tk.Tk()
         self._setup_window()
+        self._load_images()        # 👈 load images AFTER root exists
         self._setup_character()
         self._setup_drag()
         self._setup_context_menu()
@@ -33,6 +23,23 @@ class TypingOverlay:
         self._anim_job = None
 
         self._start_keyboard_listener()
+
+    def _load_images(self):
+        # now safe to create PhotoImage objects
+        self.IDLE_FRAMES = [ImageTk.PhotoImage(Image.open(resource_path("images/idle.png")))]
+        self.TYPING_FRAMES = [
+            ImageTk.PhotoImage(Image.open(resource_path("images/typing1.png"))),
+            ImageTk.PhotoImage(Image.open(resource_path("images/typing2.png"))),
+            ImageTk.PhotoImage(Image.open(resource_path("images/typing3.png"))),
+            ImageTk.PhotoImage(Image.open(resource_path("images/typing4.png"))),
+            ImageTk.PhotoImage(Image.open(resource_path("images/typing5.png"))),
+        ]
+        self.SPECIAL_FRAMES = {
+            "Key.space":     [ImageTk.PhotoImage(Image.open(resource_path("images/space.png")))],
+            "Key.enter":     [ImageTk.PhotoImage(Image.open(resource_path("images/enter.png")))],
+            "Key.backspace": [ImageTk.PhotoImage(Image.open(resource_path("images/backspace.png")))],
+            "Key.esc":       [ImageTk.PhotoImage(Image.open(resource_path("images/esc.png")))],
+        }
 
     def _setup_window(self):
         r = self.root
@@ -48,7 +55,7 @@ class TypingOverlay:
     def _setup_character(self):
         self.char_label = tk.Label(
             self.root,
-            image=IDLE_FRAMES[0],
+            image=self.IDLE_FRAMES[0],
             bg="black"
         )
         self.char_label.pack(expand=True)
