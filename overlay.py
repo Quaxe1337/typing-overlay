@@ -25,11 +25,10 @@ class TypingOverlay:
         self._start_keyboard_listener()
 
     def _load_images(self):
-        # now safe to create PhotoImage objects
-    def load_and_resize(path, size=(160,160)):
-        img = Image.open(resource_path(path))
-        img = img.resize(size, Image.LANCZOS)
-        return ImageTk.PhotoImage(img)
+        def load_and_resize(path, size=(160,160)):
+            img = Image.open(resource_path(path))
+            img = img.resize(size, Image.LANCZOS)
+            return ImageTk.PhotoImage(img)
         
         self.IDLE_FRAMES = [ImageTk.PhotoImage(Image.open(resource_path("images/idle.png")))]
         self.TYPING_FRAMES = [
