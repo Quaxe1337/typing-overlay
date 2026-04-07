@@ -30,9 +30,6 @@ class TypingOverlay:
         self.TYPING_FRAMES = [
             ImageTk.PhotoImage(Image.open(resource_path("images/typing1.png"))),
             ImageTk.PhotoImage(Image.open(resource_path("images/typing2.png"))),
-            ImageTk.PhotoImage(Image.open(resource_path("images/typing3.png"))),
-            ImageTk.PhotoImage(Image.open(resource_path("images/typing4.png"))),
-            ImageTk.PhotoImage(Image.open(resource_path("images/typing5.png"))),
         ]
         self.SPECIAL_FRAMES = {
             "Key.space":     [ImageTk.PhotoImage(Image.open(resource_path("images/space.png")))],
