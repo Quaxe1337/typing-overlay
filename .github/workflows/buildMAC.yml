@@ -24,10 +24,12 @@ jobs:
 
       - name: Build app with PyInstaller
         run: |
-          pyinstaller overlay.spec
+          pyinstaller --onefile --windowed overlay.py
+          # 👆 --windowed tells PyInstaller to make a .app bundle
+          # 👆 --onefile packs everything into a single binary inside the bundle
 
       - name: Upload app as artifact
         uses: actions/upload-artifact@v4
         with:
           name: TypingOverlay-macOS
-          path: dist/TypingOverlay
+          path: dist/TypingOverlay.app
