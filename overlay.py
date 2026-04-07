@@ -4,6 +4,7 @@ from PIL import Image, ImageTk
 import os, sys
 
 def resource_path(relative_path):
+    """Get absolute path to resource, works for dev and for PyInstaller build"""
     try:
         base_path = sys._MEIPASS   # for PyInstaller
     except Exception:
@@ -14,7 +15,7 @@ class TypingOverlay:
     def __init__(self):
         self.root = tk.Tk()
         self._setup_window()
-        self._load_images()        # 👈 load images AFTER root exists
+        self._load_images()        # load images AFTER root exists
         self._setup_character()
         self._setup_drag()
         self._setup_context_menu()
@@ -29,17 +30,17 @@ class TypingOverlay:
             img = Image.open(resource_path(path))
             img = img.resize(size, Image.LANCZOS)
             return ImageTk.PhotoImage(img)
-        
-        self.IDLE_FRAMES = [ImageTk.PhotoImage(Image.open(resource_path("images/idle.png")))]
+
+        self.IDLE_FRAMES = [load_and_resize("images/idle.png")]
         self.TYPING_FRAMES = [
-            ImageTk.PhotoImage(Image.open(resource_path("images/typing1.png"))),
-            ImageTk.PhotoImage(Image.open(resource_path("images/typing2.png"))),
+            load_and_resize("images/typing1.png"),
+            load_and_resize("images/typing2.png"),
         ]
         self.SPECIAL_FRAMES = {
-            "Key.space":     [ImageTk.PhotoImage(Image.open(resource_path("images/space.png")))],
-            "Key.enter":     [ImageTk.PhotoImage(Image.open(resource_path("images/enter.png")))],
-            "Key.backspace": [ImageTk.PhotoImage(Image.open(resource_path("images/backspace.png")))],
-            "Key.esc":       [ImageTk.PhotoImage(Image.open(resource_path("images/esc.png")))],
+            "Key.space":     [load_and_resize("images/space.png")],
+            "Key.enter":     [load_and_resize("images/enter.png")],
+            "Key.backspace": [load_and_resize("images/backspace.png")],
+            "Key.esc":       [load_and_resize("images/esc.png")],
         }
 
     def _setup_window(self):
@@ -51,7 +52,7 @@ class TypingOverlay:
             r.attributes("-transparentcolor", "black")
         except tk.TclError:
             pass
-        r.geometry("160x180+200+600")
+        r.geometry("200x220+200+600")  # slightly larger to fit resized images
 
     def _setup_character(self):
         self.char_label = tk.Label(
@@ -100,9 +101,26 @@ class TypingOverlay:
         self.menu.tk_popup(event.x_root, event.y_root)
 
     def _resize(self, size):
-        # Resize images dynamically if needed
-        # (Optional: reload images at different sizes)
-        self.root.geometry(f"{size}x{size + 20}")
+        # Resize images dynamically
+        def reload_and_resize(path):
+            img = Image.open(resource_path(path))
+            img = img.resize((size, size), Image.LANCZOS)
+            return ImageTk.PhotoImage(img)
+
+        # reload all frames at new size
+        self.IDLE_FRAMES = [reload_and_resize("images/idle.png")]
+        self.TYPING_FRAMES = [
+            reload_and_resize("images/typing1.png"),
+            reload_and_resize("images/typing2.png"),
+        ]
+        self.SPECIAL_FRAMES = {
+            "Key.space":     [reload_and_resize("images/space.png")],
+            "Key.enter":     [reload_and_resize("images/enter.png")],
+            "Key.backspace": [reload_and_resize("images/backspace.png")],
+            "Key.esc":       [reload_and_resize("images/esc.png")],
+        }
+
+        self.root.geometry(f"{size}x{size + 40}")
 
     def _start_keyboard_listener(self):
         def on_press(key):
@@ -122,7 +140,7 @@ class TypingOverlay:
         self.key_label.config(text=f"[ {display[:6]} ]")
 
         key_str = str(key)
-        frames = SPECIAL_FRAMES.get(key_str, TYPING_FRAMES)
+        frames = self.SPECIAL_FRAMES.get(key_str, self.TYPING_FRAMES)
         self._play_frames(frames, idx=0)
 
     def _play_frames(self, frames, idx):
@@ -137,8 +155,8 @@ class TypingOverlay:
             self._anim_job = self.root.after(300, self._reset_idle)
 
     def _reset_idle(self):
-        self.char_label.config(image=IDLE_FRAMES[0])
-        self.char_label.image = IDLE_FRAMES[0]
+        self.char_label.config(image=self.IDLE_FRAMES[0])
+        self.char_label.image = self.IDLE_FRAMES[0]
         self.key_label.config(text="")
         self._anim_job = None
 
