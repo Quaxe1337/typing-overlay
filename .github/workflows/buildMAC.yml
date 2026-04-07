@@ -1,0 +1,33 @@
+name: Build macOS App
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyinstaller pynput Pillow
+
+      - name: Build app with PyInstaller
+        run: |
+          pyinstaller overlay.spec
+
+      - name: Upload app as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TypingOverlay-macOS
+          path: dist/TypingOverlay
