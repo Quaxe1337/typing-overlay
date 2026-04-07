@@ -25,7 +25,7 @@ jobs:
       - name: Build app with PyInstaller
         run: |
           pyinstaller --onefile --windowed overlay.py
-          # 👆 --windowed tells PyInstaller to make a .app bundle
+          # 👆 --windowed creates a .app bundle for GUI apps
           # 👆 --onefile packs everything into a single binary inside the bundle
 
       - name: Upload app as artifact
