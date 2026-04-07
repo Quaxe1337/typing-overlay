@@ -24,7 +24,7 @@ jobs:
 
       - name: Build app with PyInstaller
         run: |
-          pyinstaller --onefile --windowed overlay.py
+          pyinstaller --onefile --windowed --name TypingOverlay overlay.py
           # 👆 --windowed creates a .app bundle for GUI apps
           # 👆 --onefile packs everything into a single binary inside the bundle
 
