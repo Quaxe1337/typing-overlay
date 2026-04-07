@@ -26,7 +26,7 @@ class TypingOverlay:
 
     def _load_images(self):
         # now safe to create PhotoImage objects
-        def load_and_resize(path, size=(160,160)):
+    def load_and_resize(path, size=(160,160)):
         img = Image.open(resource_path(path))
         img = img.resize(size, Image.LANCZOS)
         return ImageTk.PhotoImage(img)
