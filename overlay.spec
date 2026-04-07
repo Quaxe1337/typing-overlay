@@ -7,7 +7,7 @@ a = Analysis(
     ['overlay.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('images/*.png', 'images')],   # 👈 include all PNGs in images/,
     hiddenimports=[
         'pynput.keyboard._win32',
         'pynput.mouse._win32',
