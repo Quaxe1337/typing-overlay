@@ -35,6 +35,7 @@ class TypingOverlay:
         self.TYPING_FRAMES = [
             load_and_resize("images/typing1.png"),
             load_and_resize("images/typing2.png"),
+            load_and_resize("images/typing3.png"),
         ]
         self.SPECIAL_FRAMES = {
             "Key.space":     [load_and_resize("images/space.png")],
